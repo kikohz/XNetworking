@@ -1,15 +1,12 @@
 PODS:
   - Alamofire (4.5.0)
-  - SDVersion (4.2.1)
 
 DEPENDENCIES:
   - Alamofire (~> 4.5)
-  - SDVersion
 
 SPEC CHECKSUMS:
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
-  SDVersion: 29ec8c9fbb3c12916782eb23888cb40f16475226
 
-PODFILE CHECKSUM: 859638c92e32afce10634c2e3f487d056663ee47
+PODFILE CHECKSUM: acce92b90c5f1aa553e4c706feec05be94cf0e78
 
 COCOAPODS: 1.2.1

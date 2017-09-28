@@ -5,5 +5,4 @@ target 'XNetworking' do
   use_frameworks!
   # Pods for XNetworking-Swift
   pod 'Alamofire', '~> 4.5'
-  pod 'SDVersion'
 end
