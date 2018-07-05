@@ -19,7 +19,7 @@ class XAFApiProxy {
 //    }()
     
     let serverTrustPolicies: [String: ServerTrustPolicy] = [
-        "nicaifu.com": .pinCertificates(
+        "apple.com": .pinCertificates(
             certificates: ServerTrustPolicy.certificates(),     //这里会自动查找main Bundle内部的证书文件
             validateCertificateChain: true,
             validateHost: true
@@ -47,6 +47,7 @@ class XAFApiProxy {
     
     public func request(urlRequest:URLRequest,successBlock:@escaping(DataResponse<Any>)  -> Void) -> Int {
         let requestID = self.generateRequestId()
+        //
         let request = self.sessionManager.request(urlRequest).responseJSON { response in
             print("Request: \(String(describing: response.request))")
             print("Response: \(String(describing: response.response))")
@@ -85,8 +86,16 @@ class XAFApiProxy {
             allParams = (service?.child?.paramsEncryptionWithPaeams(params: allParams))!
         }
         let urlString = (service?.apiBaseUrl)! + "/" + method
-        let request = try? URLRequest.init(url: urlString, method: HTTPMethod(rawValue: httpMethod)!)
-        return request
+        
+        //生成url
+        var originalRequest: URLRequest?
+        do {
+            originalRequest = try URLRequest(url: urlString, method: HTTPMethod(rawValue: httpMethod)!)
+            originalRequest = try URLEncoding.default.encode(originalRequest!, with: allParams)
+        } catch {
+            originalRequest = try? URLRequest.init(url: urlString, method: HTTPMethod(rawValue: httpMethod)!)
+        }
+        return originalRequest
     }
     
     func cancellAllTask() ->Void {
@@ -98,13 +107,14 @@ class XAFApiProxy {
     }
     
     func cancellTask(requestID:Int) ->Void {
-        if self.dispatchTable.count <= 0 {
+        if self.dispatchTable.count <= requestID {
             return
         }
-        let request:DataRequest = self.dispatchTable[requestID]!
-        request.cancel()
-       self.dispatchTable.removeValue(forKey: requestID)
-       
+        //如果能取出来说明还在队列中
+        if let request:DataRequest = self.dispatchTable[requestID] {
+            request.cancel()
+            self.dispatchTable.removeValue(forKey: requestID)
+        }
     }
 }
 
